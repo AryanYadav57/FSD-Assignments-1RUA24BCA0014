@@ -1,0 +1,191 @@
+﻿export type Workout = {
+  id: number;
+  title: string;
+  trainer: string;
+  duration: number; // minutes
+  difficulty: number; // 1-5
+  trainingType: string[];
+  equipment: string[];
+  bodyFocus: string;
+  image: string; // CDN image path
+  href: string;
+  isFree: boolean;
+};
+
+const CDN = "https://cloudfront.fitnessblender.com/assets/img/video";
+
+export const workouts: Workout[] = [
+  {
+    id: 1,
+    title: "Total Body Strength Training Workout with Dumbbells",
+    trainer: "Kelli",
+    duration: 38,
+    difficulty: 3,
+    trainingType: ["Strength Training"],
+    equipment: ["Dumbbells"],
+    bodyFocus: "Total Body",
+    image: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=1000&auto=format&fit=crop",
+    href: "/videos/total-body-strength-training-workout-with-dumbbells",
+    isFree: true,
+  },
+  {
+    id: 2,
+    title: "HIIT Cardio and Abs Workout â€” At Home HIIT Training",
+    trainer: "Daniel",
+    duration: 26,
+    difficulty: 4,
+    trainingType: ["HIIT", "Cardiovascular"],
+    equipment: ["No Equipment"],
+    bodyFocus: "Total Body",
+    image: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=1000&auto=format&fit=crop",
+    href: "/videos/hiit-cardio-and-abs-workout",
+    isFree: true,
+  },
+  {
+    id: 3,
+    title: "Low Impact Cardio Workout for Beginners",
+    trainer: "Tasha",
+    duration: 30,
+    difficulty: 2,
+    trainingType: ["Cardiovascular", "Low Impact"],
+    equipment: ["No Equipment"],
+    bodyFocus: "Total Body",
+    image: "https://images.unsplash.com/photo-1538805060514-97d9cc17730c?q=80&w=1000&auto=format&fit=crop",
+    href: "/videos/low-impact-cardio-for-beginners",
+    isFree: true,
+  },
+  {
+    id: 4,
+    title: "Upper Body Strength Training â€” Back, Shoulders, Arms",
+    trainer: "Erica",
+    duration: 42,
+    difficulty: 3,
+    trainingType: ["Strength Training"],
+    equipment: ["Dumbbells"],
+    bodyFocus: "Upper Body",
+    image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1000&auto=format&fit=crop",
+    href: "/videos/upper-body-strength-training",
+    isFree: false,
+  },
+  {
+    id: 5,
+    title: "Yoga for Flexibility and Stress Relief",
+    trainer: "Nicole",
+    duration: 35,
+    difficulty: 2,
+    trainingType: ["Yoga", "Stretching/Flexibility"],
+    equipment: ["Mat"],
+    bodyFocus: "Total Body",
+    image: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&q=80&w=800",
+    href: "/videos/yoga-for-flexibility-and-stress-relief",
+    isFree: true,
+  },
+  {
+    id: 6,
+    title: "Brutal HIIT Ladder Workout â€” Cardio and Strength",
+    trainer: "Kelli",
+    duration: 50,
+    difficulty: 5,
+    trainingType: ["HIIT", "Strength Training"],
+    equipment: ["Dumbbells", "Mat"],
+    bodyFocus: "Total Body",
+    image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&q=80&w=800",
+    href: "/videos/brutal-hiit-ladder-workout",
+    isFree: false,
+  },
+  {
+    id: 7,
+    title: "Pilates Workout for Core Strength",
+    trainer: "Nicole",
+    duration: 28,
+    difficulty: 2,
+    trainingType: ["Pilates"],
+    equipment: ["Mat"],
+    bodyFocus: "Core",
+    image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=800",
+    href: "/videos/pilates-workout-for-core-strength",
+    isFree: true,
+  },
+  {
+    id: 8,
+    title: "Quick 10 Minute Abs and Obliques Workout",
+    trainer: "Daniel",
+    duration: 10,
+    difficulty: 3,
+    trainingType: ["Strength Training"],
+    equipment: ["No Equipment"],
+    bodyFocus: "Core",
+    image: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&q=80&w=800",
+    href: "/videos/10-minute-abs-and-obliques-workout",
+    isFree: true,
+  },
+  {
+    id: 9,
+    title: "30 Minute Walk at Home â€” Low Impact",
+    trainer: "Tasha",
+    duration: 30,
+    difficulty: 1,
+    trainingType: ["Cardiovascular", "Low Impact"],
+    equipment: ["No Equipment"],
+    bodyFocus: "Total Body",
+    image: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&q=80&w=800",
+    href: "/videos/30-minute-walk-at-home",
+    isFree: true,
+  },
+  {
+    id: 10,
+    title: "Lower Body Strength â€” Glutes, Hamstrings, Quads",
+    trainer: "Erica",
+    duration: 45,
+    difficulty: 4,
+    trainingType: ["Strength Training"],
+    equipment: ["Dumbbells", "Mat"],
+    bodyFocus: "Lower Body",
+    image: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&q=80&w=800",
+    href: "/videos/lower-body-strength-workout",
+    isFree: false,
+  },
+  {
+    id: 11,
+    title: "Full Body Mobility and Stretching Routine",
+    trainer: "Kelli",
+    duration: 20,
+    difficulty: 1,
+    trainingType: ["Stretching/Flexibility", "Mobility"],
+    equipment: ["Mat"],
+    bodyFocus: "Total Body",
+    image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&q=80&w=800",
+    href: "/videos/full-body-mobility-and-stretching",
+    isFree: true,
+  },
+  {
+    id: 12,
+    title: "Advanced Strength Circuit â€” Full Body",
+    trainer: "Daniel",
+    duration: 55,
+    difficulty: 5,
+    trainingType: ["Strength Training", "HIIT"],
+    equipment: ["Dumbbells", "Mat"],
+    bodyFocus: "Total Body",
+    image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=800",
+    href: "/videos/advanced-strength-circuit",
+    isFree: false,
+  },
+];
+
+export const difficultyLabel: Record<number, string> = {
+  1: "Beginner",
+  2: "Beginner+",
+  3: "Intermediate",
+  4: "Intermediate+",
+  5: "Advanced",
+};
+
+export const difficultyColor: Record<number, string> = {
+  1: "#7bc67e",
+  2: "#a8c97a",
+  3: "#f4c842",
+  4: "#f4984e",
+  5: "#e85d5d",
+};
+
