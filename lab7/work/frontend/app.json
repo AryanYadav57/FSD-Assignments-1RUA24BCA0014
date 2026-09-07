@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "name": "User Routes Lab",
+    "slug": "user-routes-lab",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}
