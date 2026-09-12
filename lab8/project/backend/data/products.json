@@ -1,0 +1,74 @@
+[
+  {
+    "id": "1",
+    "name": "Wireless Noise-Canceling Headphones",
+    "category": "Electronics",
+    "price": 299.99,
+    "stock": 15,
+    "description": "Experience true silence with these premium noise-canceling headphones. Features 30-hour battery life and exceptional sound clarity.",
+    "imageUrl": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80"
+  },
+  {
+    "id": "2",
+    "name": "Mechanical Gaming Keyboard",
+    "category": "Electronics",
+    "price": 129.50,
+    "stock": 25,
+    "description": "RGB mechanical keyboard with tactile switches for satisfying feedback and lightning-fast response times.",
+    "imageUrl": "https://images.unsplash.com/photo-1595225476474-87563907a212?w=800&q=80"
+  },
+  {
+    "id": "3",
+    "name": "Ergonomic Office Chair",
+    "category": "Furniture",
+    "price": 199.99,
+    "stock": 10,
+    "description": "Comfortable office chair with lumbar support, adjustable armrests, and breathable mesh back.",
+    "imageUrl": "https://images.unsplash.com/photo-1505843490538-5133c6c7d0e1?w=800&q=80"
+  },
+  {
+    "id": "4",
+    "name": "4K Ultra HD Monitor",
+    "category": "Electronics",
+    "price": 349.00,
+    "stock": 8,
+    "description": "27-inch 4K monitor with stunning color accuracy, ideal for creative professionals and gamers.",
+    "imageUrl": "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=800&q=80"
+  },
+  {
+    "id": "5",
+    "name": "Stainless Steel Water Bottle",
+    "category": "Accessories",
+    "price": 24.99,
+    "stock": 50,
+    "description": "Insulated water bottle keeps drinks cold for 24 hours or hot for 12 hours. BPA-free.",
+    "imageUrl": "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=800&q=80"
+  },
+  {
+    "id": "6",
+    "name": "Smart Home Speaker",
+    "category": "Electronics",
+    "price": 89.99,
+    "stock": 30,
+    "description": "Voice-controlled smart speaker with rich sound and built-in virtual assistant.",
+    "imageUrl": "https://images.unsplash.com/photo-1589003077984-894e133dabab?w=800&q=80"
+  },
+  {
+    "id": "7",
+    "name": "Adjustable Standing Desk",
+    "category": "Furniture",
+    "price": 450.00,
+    "stock": 5,
+    "description": "Motorized standing desk with memory presets for seamless transition between sitting and standing.",
+    "imageUrl": "https://images.unsplash.com/photo-1595515106969-1ce29566ff1c?w=800&q=80"
+  },
+  {
+    "id": "8",
+    "name": "Wireless Charging Pad",
+    "category": "Accessories",
+    "price": 19.99,
+    "stock": 100,
+    "description": "Fast wireless charger compatible with all Qi-enabled devices. Sleek and minimalistic design.",
+    "imageUrl": "https://images.unsplash.com/photo-1622445270943-4415f69c9bf8?w=800&q=80"
+  }
+]
