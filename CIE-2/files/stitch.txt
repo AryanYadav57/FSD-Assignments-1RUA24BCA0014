@@ -1,0 +1,14 @@
+AQ.Ab8RN6Ja78SGn0l6IhVKYXW260cMUkDPMiqGgFPVd0XLmEN44g
+stitch mcp for antigravity
+
+configuration
+{
+  "mcpServers": {
+    "stitch": {
+      "serverUrl": "https://stitch.googleapis.com/mcp",
+      "headers": {
+        "X-Goog-Api-Key": "AQ.Ab8RN6Ja78SGn0l6IhVKYXW260cMUkDPMiqGgFPVd0XLmEN44g"
+      }
+    }
+  }
+}

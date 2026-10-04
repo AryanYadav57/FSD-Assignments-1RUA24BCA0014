@@ -1,0 +1,118 @@
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css";
+
+/* Platform-specific font families */
+@media android {
+  :root {
+    --font-mono: monospace;
+    --font-rounded: normal;
+    --font-serif: serif;
+    --font-sans: normal;
+  }
+}
+
+@media ios {
+  :root {
+    --font-mono: ui-monospace;
+    --font-serif: ui-serif;
+    --font-sans: system-ui;
+    --font-rounded: ui-rounded;
+  }
+}
+
+@layer theme {
+  @theme {
+    /* Custom fonts matching Antimetal design */
+    --font-serif: "Playfair Display", serif;
+    --font-sans: "Inter", sans-serif;
+
+    /* Light mode (default) — warm parchment aesthetic */
+    --color-synapse-bg:         #EBE9E1;
+    --color-synapse-surface:    rgba(255, 255, 255, 0.50);
+    --color-synapse-border:     rgba(0, 0, 0, 0.07);
+    --color-synapse-text:       #1C1C1C;
+    --color-synapse-text-muted: #6B6A65;
+    --color-synapse-accent:     #FF6B35;
+    --color-synapse-gold:       #D4A336;
+    --color-synapse-black:      #000000;
+  }
+}
+
+/* ─── Dark Mode ──────────────────────────────────── */
+:root[data-theme="dark"] {
+  --color-synapse-bg:         #141210;
+  --color-synapse-surface:    rgba(255, 255, 255, 0.04);
+  --color-synapse-border:     rgba(255, 255, 255, 0.08);
+  --color-synapse-text:       #F0EDE6;
+  --color-synapse-text-muted: #8C8A84;
+  --color-synapse-accent:     #FF7A47;
+  --color-synapse-gold:       #E0B347;
+}
+
+/* ─── Smooth global transitions ─────────────────── */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── Web-only polish ────────────────────────────── */
+@media (hover: hover) {
+  html, body, #root {
+    background-color: var(--color-synapse-bg);
+    height: 100%;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Subtle custom scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(107, 106, 101, 0.25);
+    border-radius: 99px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(107, 106, 101, 0.45);
+  }
+
+  /* Selection colour */
+  ::selection {
+    background: rgba(255, 107, 53, 0.20);
+    color: inherit;
+  }
+
+  /* Focus ring */
+  :focus-visible {
+    outline: 2px solid rgba(255, 107, 53, 0.60);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+/* ─── Mobile web fixes ───────────────────────────── */
+@media (max-width: 768px) {
+  html, body {
+    /* Prevent horizontal scroll on narrow viewports */
+    overflow-x: hidden;
+    /* Ensure the page fills the mobile viewport including address bar space */
+    height: 100%;
+    height: -webkit-fill-available;
+  }
+
+  /* Prevent double-tap zoom on interactive elements */
+  button, a, [role="button"] {
+    touch-action: manipulation;
+  }
+
+  /* Remove tap highlight on mobile */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
