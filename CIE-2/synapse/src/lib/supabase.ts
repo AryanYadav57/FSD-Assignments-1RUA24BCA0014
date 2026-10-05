@@ -10,18 +10,26 @@ const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || 'your-anon-
 const storage = Platform.OS === 'web' 
   ? {
       getItem: (key: string) => {
-        if (typeof localStorage === 'undefined') return null;
-        return localStorage.getItem(key);
+        try {
+          if (typeof window === 'undefined' || typeof window.localStorage === 'undefined') return null;
+          return window.localStorage.getItem(key);
+        } catch (e) {
+          return null;
+        }
       },
       setItem: (key: string, value: string) => {
-        if (typeof localStorage !== 'undefined') {
-          localStorage.setItem(key, value);
-        }
+        try {
+          if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+            window.localStorage.setItem(key, value);
+          }
+        } catch (e) {}
       },
       removeItem: (key: string) => {
-        if (typeof localStorage !== 'undefined') {
-          localStorage.removeItem(key);
-        }
+        try {
+          if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+            window.localStorage.removeItem(key);
+          }
+        } catch (e) {}
       }
     }
   : AsyncStorage;
