@@ -1,0 +1,11 @@
+services:
+  mongodb:
+    image: mongo:7.0
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - campus_found_data:/data/db
+
+volumes:
+  campus_found_data:

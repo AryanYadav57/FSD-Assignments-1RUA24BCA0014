@@ -3,7 +3,8 @@ import { View, Text, Pressable, ScrollView, TextInput } from '@/tw';
 import { useRouter } from 'expo-router';
 import { useNotesStore } from '@/store/notesStore';
 import { useAuthStore } from '@/store/authStore';
-import { useWindowDimensions, Animated } from 'react-native';
+import { Animated, Platform } from 'react-native';
+import { useIsMobile } from '@/hooks/useIsMobile';
 import { useThemeStore } from '@/store/themeStore';
 import { useProfileStore } from '@/store/profileStore';
 import { checkUsernameAvailable, isValidUsername } from '@/lib/profiles';
@@ -111,8 +112,8 @@ export default function WelcomeScreen() {
   const router = useRouter();
   const { openQuickCapture, openCommandPalette } = useNotesStore();
   const { user } = useAuthStore();
-  const { width } = useWindowDimensions();
-  const isDesktop = width >= 768;
+  const isMobile = useIsMobile();
+  const isDesktop = !isMobile;
   const { profile, isSaving, createAndSetProfile } = useProfileStore();
   const { theme } = useThemeStore();
   const isDark = theme === 'dark';
@@ -128,9 +129,10 @@ export default function WelcomeScreen() {
   const slideAnim = useRef(new Animated.Value(24)).current;
 
   useEffect(() => {
+    const useND = Platform.OS !== 'web';
     Animated.parallel([
-      Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: true }),
-      Animated.timing(slideAnim, { toValue: 0, duration: 600, useNativeDriver: true }),
+      Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: useND }),
+      Animated.timing(slideAnim, { toValue: 0, duration: 600, useNativeDriver: useND }),
     ]).start();
   }, []);
 
@@ -193,11 +195,11 @@ export default function WelcomeScreen() {
   const cols = isDesktop ? 4 : 2;
 
   return (
-    <ScrollView className="flex-1 bg-synapse-bg" contentContainerClassName="pb-20">
+    <ScrollView className="flex-1 bg-synapse-bg" contentContainerStyle={{ paddingBottom: 100 }}>
       <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
 
         {/* ── Hero ─────────────────────────────────────────────────── */}
-        <View className="px-8 pt-16 pb-12 items-center">
+        <View style={{ paddingHorizontal: 24, paddingTop: isDesktop ? 64 : 32, paddingBottom: 40, alignItems: 'center' }}>
           {/* Logo mark */}
           <View className="w-14 h-14 mb-6 flex-row flex-wrap justify-between content-between">
             <View className="w-5.5 h-5.5 bg-synapse-text rounded-full" style={{ width: 22, height: 22 }} />
@@ -364,9 +366,11 @@ function FeatureCard({
   cols: number;
   onPress: () => void;
 }) {
-  const { width } = useWindowDimensions();
-  const cardWidth = (width - 48 - (cols - 1) * 12) / cols; // px-6 * 2 = 48, gap = 12
-  const isSmallScreen = width < 400; // hide shortcuts on very narrow phones
+  const isMobile = useIsMobile();
+  const isSmallScreen = isMobile; // Simplify this for SSR safety
+  
+  // Hardcode percentages to avoid JS width calculations which fail in SSR
+  const cardWidth = isMobile ? '100%' : `${100 / cols}%`;
 
   const { Icon } = { Icon: feat.icon };
 

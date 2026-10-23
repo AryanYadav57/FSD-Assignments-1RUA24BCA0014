@@ -19,6 +19,7 @@ interface TiptapEditorProps {
   placeholder?: string;
   onUpdate: (json: any, text: string) => void;
   onReady?: () => void;
+  isDark?: boolean;
   dom?: import('expo/dom').DOMProps;
 }
 
@@ -40,7 +41,12 @@ export default function TiptapEditor({
   placeholder = 'Start writing… type / for commands',
   onUpdate,
   onReady,
+  isDark = false,
 }: TiptapEditorProps) {
+  // Apply theme to iframe document root so CSS vars work correctly
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  }, [isDark]);
   const [slashMenu, setSlashMenu] = useState<{ open: boolean; filter: string; index: number }>({
     open: false,
     filter: '',
@@ -262,6 +268,17 @@ const EDITOR_STYLES = `
       --accent:   #FF7A47;
       --gold:     #E0B347;
     }
+  }
+
+  /* Manual dark mode via data-theme attribute (set from React Native theme toggle) */
+  :root[data-theme="dark"] {
+    --bg:       #141210;
+    --surface:  rgba(255,255,255,0.04);
+    --border:   rgba(255,255,255,0.08);
+    --text:     #F0EDE6;
+    --muted:    #8C8A84;
+    --accent:   #FF7A47;
+    --gold:     #E0B347;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }

@@ -10,13 +10,12 @@ import { useAuthStore } from '@/store/authStore';
 import { useProfileStore } from '@/store/profileStore';
 import { fetchNotes } from '@/lib/notes';
 import { useEffect } from 'react';
-import { useWindowDimensions } from 'react-native';
+import { useIsMobile } from '@/hooks/useIsMobile';
 import { useRouter } from 'expo-router';
 import { Sun, Moon, Plus, Settings } from 'lucide-react-native';
 
 export default function AppLayout() {
-  const { width } = useWindowDimensions();
-  const isMobile = width < 768;
+  const isMobile = useIsMobile();
   const { openQuickCapture } = useNotesStore();
   const { theme, toggleTheme } = useThemeStore();
   const isDark = theme === 'dark';

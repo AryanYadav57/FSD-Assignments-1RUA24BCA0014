@@ -4,20 +4,22 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useNotesStore } from '@/store/notesStore';
 import { updateNote, trashNote, shareNote, unshareNote } from '@/lib/notes';
 import { tiptapJsonToMarkdown, downloadMarkdown } from '@/lib/markdown';
-import { Platform, useWindowDimensions } from 'react-native';
+import { Platform } from 'react-native';
 import TiptapEditor from '@/components/editor/TiptapEditor';
 import { syncNoteLinks } from '@/lib/links';
 import { supabase } from '@/lib/supabase';
 import { NoteLink } from '@/lib/types';
 import { useProfileStore } from '@/store/profileStore';
+import { useThemeStore } from '@/store/themeStore';
+import { useIsMobile } from '@/hooks/useIsMobile';
 import { ArrowLeft, Download, Trash2, Share2, Globe, Lock } from 'lucide-react-native';
 
 export default function NoteEditorScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { notes } = useNotesStore();
   const router = useRouter();
-  const { width } = useWindowDimensions();
-  const isDesktop = width > 768;
+  const isMobile = useIsMobile();
+  const isDesktop = !isMobile;
 
   const note = notes.find((n) => n.id === id);
 
@@ -69,6 +71,8 @@ export default function NoteEditorScreen() {
   };
 
   const { profile } = useProfileStore();
+  const { theme } = useThemeStore();
+  const isDark = theme === 'dark';
   const [shareToast, setShareToast] = useState('');
 
   const handleShare = async () => {
@@ -222,7 +226,7 @@ export default function NoteEditorScreen() {
         </View>
       </View>
 
-      <View className={`flex-1 ${isDesktop ? 'flex-row' : 'flex-col'} p-8`}>
+      <View className={`flex-1 ${isDesktop ? 'flex-row' : 'flex-col'}`} style={{ padding: isDesktop ? 32 : 16, paddingBottom: isDesktop ? 32 : 90 }}>
         {/* Main Editor Area */}
         <View className="flex-1 pr-4">
           {/* Title */}
@@ -256,6 +260,7 @@ export default function NoteEditorScreen() {
               }
               placeholder="Start writing… type / for commands, or [[ to link"
               onUpdate={handleEditorUpdate}
+              isDark={isDark}
               dom={{ style: { flex: 1 } }}
             />
           </View>

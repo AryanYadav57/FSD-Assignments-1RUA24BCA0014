@@ -1,0 +1,114 @@
+Mini User & Family Management System
+Full-Stack Assignment | Node.js + Express + EJS + MongoDB + Mongoose
+1. Objective
+Build a User & Family Management System using the concepts covered in class. The application must use Express, EJS, MongoDB, Mongoose, dynamic routes, req.params, req.body, CRUD operations, validation, and error handling.
+2. Technologies to Use
+Node.js
+Express.js
+EJS
+MongoDB
+Mongoose
+dotenv
+body-parser
+3. Scenario
+Build a system where users can create their own profile and add multiple children. Each child must belong to one particular user. All permanent data must be stored in MongoDB.
+Example:
+Danish → Aarav, Anaya, Riya
+Sonu → Rahul, Priya
+4. Database Design
+User Collection
+firstName
+lastName
+email
+phone
+Child Collection
+firstName
+lastName
+age
+email
+parentId
+Important: parentId must store the MongoDB _id of the parent user. Students must use this relationship when fetching and validating children.
+5. Required API Routes
+POST /users — Create a new user and save the data in MongoDB.
+GET /users/:id — Find a user by ID and display the profile using EJS.
+POST /users/:id/children — Check the parent user, read child data from req.body, and save the child with parentId.
+GET /users/:id/children — Return/display only children belonging to the specified user.
+PATCH /children/:id — Update child information such as firstName, lastName, age, and email.
+DELETE /children/:id — Delete a child from MongoDB.
+6. User Profile Page
+Create an EJS page for GET /users/:id. It must display user information and dynamically load all children belonging to that user. Do not hard-code children in the EJS file.
+User name
+Email
+Phone number
+Children list
+Child age and email
+Update option
+Delete option
+Add Child option
+7. Error Handling
+User ID does not exist → show a custom 404 page.
+Child ID does not exist → return/display Child Not Found.
+A valid user has no children → show "No children found for this user."
+Invalid MongoDB ID → application must not crash.
+Database/server error → return an appropriate error response.
+8. Validation Requirements
+User email is required.
+Child age is required.
+Required fields must not be empty.
+Invalid IDs must be handled safely.
+A child can only be created for an existing user.
+9. Main Thinking Challenge
+Implement GET /users/:id/children/:childId. Display the child only when that child actually belongs to the requested user.
+Example: If Child B belongs to Sonu, requesting Danish’s user ID together with Child B’s ID must NOT display Child B.
+Students must figure out how to check the relationship between child.parentId and the requested user ID.
+10. Bonus Challenges
+GET /users → display all users using EJS.
+GET /users/search/:name → search users by first name.
+GET /users/:id/children/count → return the number of children belonging to the user.
+Add meaningful success and error messages to all API responses.
+11. Environment Variables
+Do not hard-code the MongoDB connection string inside index.js.
+Create .env:
+MONGODB_URL=your_mongodb_connection_string
+PORT=3000
+
+
+
+
+
+
+12. Suggested Project Structure
+family-management/
+├── index.js
+├── package.json
+├── .env
+├── views/
+│   ├── profile.ejs
+│   ├── child.ejs
+│   ├── add-child.ejs
+│   └── 404.html
+└── ...
+13. Restrictions
+Do not hard-code users or children.
+Do not use arrays as the permanent database.
+Do not use React for this assignment.
+Do not use Firebase or SQL.
+Do not hard-code the MongoDB URL.
+Do not copy a ready-made project.
+All child data must come from MongoDB dynamically.
+14. Concepts Being Tested
+15. Submission Checklist
+MongoDB connection working
+User creation working
+User profile page working
+Child creation working
+Children filtered by parentId
+Child update working
+Child deletion working
+Custom 404 page working
+Validation implemented
+Invalid ID handled without crashing
+.env used for MongoDB URL
+Code is organized and readable
+16. Student Instruction
+Do not start by asking for the complete solution. First draw the database structure and route flow on paper. Then implement one route at a time. You are expected to understand why each route, parameter, query, and database operation is being used.

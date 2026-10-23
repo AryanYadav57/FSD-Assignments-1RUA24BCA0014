@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Pressable, ScrollView } from '@/tw';
 import { useNotesStore } from '@/store/notesStore';
 import { useRouter } from 'expo-router';
+import { useIsMobile } from '@/hooks/useIsMobile';
 
 export default function HomeScreen() {
   const { notes, openQuickCapture, openCommandPalette } = useNotesStore();
@@ -12,11 +13,14 @@ export default function HomeScreen() {
   const totalNotes = notes.filter((n) => n.status !== 'trashed').length;
   const pinnedNotes = notes.filter((n) => n.is_pinned && n.status === 'note');
 
+  const isMobile = useIsMobile();
+
   return (
-    <ScrollView className="flex-1" contentContainerClassName="p-8 pb-16">
+    <ScrollView className="flex-1">
+      <View style={{ padding: isMobile ? 16 : 32, paddingBottom: isMobile ? 100 : 64 }}>
       {/* Greeting */}
-      <View className="mb-10">
-        <Text className="font-serif text-5xl text-synapse-text mb-3 leading-tight">
+      <View className="mb-8">
+        <Text className={`font-serif text-synapse-text mb-3 leading-tight ${isMobile ? 'text-4xl' : 'text-5xl'}`}>
           Good {getTimeOfDay()}.
         </Text>
         <Text className="font-sans text-base text-synapse-text-muted">
@@ -27,7 +31,7 @@ export default function HomeScreen() {
       </View>
 
       {/* Quick Actions */}
-      <View className="flex-row flex-wrap mb-10 gap-3">
+      <View className="flex-row flex-wrap mb-8 gap-3">
         <Pressable
           onPress={openQuickCapture}
           className="bg-synapse-text h-11 px-6 rounded-full items-center justify-center"
@@ -51,7 +55,7 @@ export default function HomeScreen() {
       </View>
 
       {/* Stats Cards */}
-      <View className="flex-row mb-10 gap-3">
+      <View className="flex-row mb-8 gap-3">
         <Pressable
           onPress={() => router.push('/(app)/inbox')}
           className="flex-1 bg-synapse-accent/10 border border-synapse-accent/20 rounded-2xl p-5 h-32 justify-between"
@@ -139,17 +143,19 @@ export default function HomeScreen() {
           </Text>
         </View>
       )}
+      </View>
     </ScrollView>
   );
 }
 
 function NoteCard({ note, router, accent = false }: { note: any; router: any; accent?: boolean }) {
+  const isMobile = useIsMobile();
   return (
     <Pressable
       onPress={() => router.push(`/(app)/note/${note.id}`)}
-      style={{ flexBasis: '31%', minWidth: 200, marginBottom: 12 }}
+      style={{ width: isMobile ? '100%' : undefined, flexBasis: isMobile ? undefined : '31%', minWidth: isMobile ? undefined : 200, marginBottom: 12 }}
     >
-      <View className={`rounded-2xl p-5 h-40 border justify-between ${
+      <View className={`rounded-2xl p-4 border justify-between ${
         accent
           ? 'bg-synapse-gold/10 border-synapse-gold/20'
           : 'bg-synapse-surface border-synapse-border'

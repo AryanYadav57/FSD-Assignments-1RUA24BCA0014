@@ -1,0 +1,18 @@
+# Local secrets
+**/.env
+**/.env.*
+!**/.env.example
+
+# Local dependencies and generated build artifacts
+**/node_modules/
+**/.expo/
+**/dist/
+**/build/
+**/web-build/
+**/.DS_Store
+
+# Nested clone; keep this repository as a single Git repository
+/CIE1-COMPONENT-1-git/
+
+# The directory currently contains only Expo cache/build output
+/New folder/ecommerce-web-app/
