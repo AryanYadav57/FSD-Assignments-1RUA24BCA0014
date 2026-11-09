@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Authentication System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0B0C10;
+      --card-bg: rgba(18, 20, 28, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --input-bg: rgba(12, 13, 19, 0.7);
+      --input-border: rgba(255, 255, 255, 0.09);
+      --input-focus: rgba(255, 255, 255, 0.22);
+      
+      --text-primary: #F8FAFC;
+      --text-secondary: #94A3B8;
+      --text-muted: #64748B;
+      
+      /* Subtle, elegant warm accents */
+      --warm-pink: rgba(244, 63, 94, 0.055);
+      --warm-amber: rgba(245, 158, 11, 0.045);
+      --warm-peach: rgba(251, 146, 60, 0.05);
+      
+      /* Status & Role Tokens */
+      --student-color: #34D399;
+      --student-bg: rgba(52, 211, 153, 0.08);
+      --student-border: rgba(52, 211, 153, 0.22);
+      
+      --admin-color: #FB923C;
+      --admin-bg: rgba(251, 146, 60, 0.09);
+      --admin-border: rgba(251, 146, 60, 0.24);
+      
+      --danger-color: #FB7185;
+      --danger-bg: rgba(251, 113, 133, 0.09);
+      --danger-border: rgba(251, 113, 133, 0.25);
+      
+      --radius-card: 18px;
+      --radius-element: 10px;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(circle at 12% 14%, var(--warm-pink) 0%, transparent 50%),
+        radial-gradient(circle at 88% 18%, var(--warm-amber) 0%, transparent 48%),
+        radial-gradient(circle at 50% 88%, var(--warm-peach) 0%, transparent 52%);
+      background-attachment: fixed;
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 16px;
+      -webkit-font-smoothing: antialiased;
+      position: relative;
+    }
+
+    /* Ambient diffuse light blooming behind the card */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 30%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 520px;
+      height: 340px;
+      background: radial-gradient(ellipse at center, rgba(251, 146, 60, 0.035) 0%, rgba(244, 63, 94, 0.025) 50%, transparent 75%);
+      filter: blur(70px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .header-branding {
+      text-align: center;
+      margin-bottom: 26px;
+      max-width: 480px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand-icon-wrapper {
+      width: 44px;
+      height: 44px;
+      margin: 0 auto 14px auto;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+
+    .title {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #FFFFFF;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      line-height: 20px;
+      font-weight: 400;
+    }
+
+    /* Minimalist Glass Card */
+    .card {
+      position: relative;
+      background: var(--card-bg);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-card);
+      box-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+      padding: 32px 30px;
+      width: 100%;
+      max-width: 430px;
+      z-index: 1;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Tab Switcher (Sign In vs Register) */
+    .tab-bar {
+      display: flex;
+      background: rgba(10, 11, 16, 0.65);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-element);
+      padding: 3px;
+      margin-bottom: 24px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      border-radius: 7px;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      transition: all 0.15s ease;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .tab-btn.active {
+      background: rgba(255, 255, 255, 0.08);
+      color: #FFFFFF;
+      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: #CBD5E1;
+      margin-bottom: 6px;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon-left {
+      position: absolute;
+      left: 13px;
+      color: var(--text-muted);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s ease;
+    }
+
+    .input-wrapper:focus-within .input-icon-left {
+      color: #E2E8F0;
+    }
+
+    input {
+      width: 100%;
+      font-family: var(--font-sans);
+      font-size: 13.5px;
+      padding: 11px 14px 11px 40px;
+      border: 1px solid var(--input-border);
+      border-radius: var(--radius-element);
+      background: var(--input-bg);
+      color: #FFFFFF;
+      outline: none;
+      transition: all 0.15s ease;
+    }
+
+    input::placeholder {
+      color: var(--text-muted);
+    }
+
+    input:focus {
+      border-color: rgba(255, 255, 255, 0.22);
+      background: rgba(14, 15, 23, 0.95);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.04);
+    }
+
+    /* Chrome / Edge autofill fix */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover, 
+    input:-webkit-autofill:focus, 
+    input:-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0 1000px #111219 inset !important;
+      -webkit-text-fill-color: #F8FAFC !important;
+      caret-color: #F8FAFC;
+      border-color: rgba(255, 255, 255, 0.16) !important;
+      transition: background-color 5000s ease-in-out 0s;
+    }
+
+    /* Password visibility toggle button with SVG */
+    .toggle-pwd-btn {
+      position: absolute;
+      right: 8px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 6px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s ease;
+      border-radius: 6px;
+    }
+
+    .toggle-pwd-btn:hover {
+      color: #E2E8F0;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .helper-text {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 5px;
+    }
+
+    /* Role selection pill toggle */
+    .role-selector {
+      display: flex;
+      background: rgba(10, 11, 16, 0.65);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-element);
+      padding: 3px;
+      margin-bottom: 10px;
+    }
+
+    .role-option {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 8px 10px;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      border-radius: 7px;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+    }
+
+    .role-option.active {
+      background: rgba(255, 255, 255, 0.08);
+      color: #FFFFFF;
+      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .role-hint {
+      font-size: 11.5px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      line-height: 17px;
+      border: 1px solid transparent;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .role-hint.student {
+      background: var(--student-bg);
+      color: #A7F3D0;
+      border-color: var(--student-border);
+    }
+
+    .role-hint.admin {
+      background: var(--admin-bg);
+      color: #FED7AA;
+      border-color: var(--admin-border);
+    }
+
+    /* Clean, Minimalist Buttons */
+    .btn {
+      width: 100%;
+      background: #FFFFFF;
+      color: #0A0B10;
+      border: none;
+      border-radius: var(--radius-element);
+      padding: 11.5px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 3px 10px rgba(255, 255, 255, 0.08);
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      background: #F1F5F9;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4), 0 5px 14px rgba(255, 255, 255, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-outline {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      color: #F1F5F9;
+      box-shadow: none;
+    }
+
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(255, 255, 255, 0.16);
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      color: #FFFFFF;
+      box-shadow: none;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.18);
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    .alert {
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      margin-bottom: 14px;
+      line-height: 17px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .alert-danger {
+      background: var(--danger-bg);
+      color: var(--danger-text);
+      border: 1px solid var(--danger-border);
+    }
+
+    /* Sleek Quick-Fill Bar */
+    .quick-fill-bar {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--card-border);
+    }
+
+    .quick-fill-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .quick-fill-title {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .quick-fill-chips {
+      display: flex;
+      gap: 8px;
+    }
+
+    .quick-chip {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-size: 11.5px;
+      color: #CBD5E1;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      font-weight: 500;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .quick-chip:hover {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(255, 255, 255, 0.16);
+      color: #FFFFFF;
+    }
+
+    .quick-chip svg {
+      opacity: 0.75;
+    }
+
+    .quick-chip:hover svg {
+      opacity: 1;
+    }
+
+    /* Profile Dashboard */
+    .profile-card {
+      max-width: 540px;
+    }
+
+    .top-action-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 22px;
+      width: 100%;
+      max-width: 540px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .user-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      border: 1px solid;
+    }
+
+    .user-badge.student {
+      background: var(--student-bg);
+      color: var(--student-text);
+      border-color: var(--student-border);
+    }
+
+    .user-badge.admin {
+      background: var(--admin-bg);
+      color: var(--admin-text);
+      border-color: var(--admin-border);
+    }
+
+    .user-avatar-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+      font-weight: 700;
+    }
+
+    .detail-table {
+      width: 100%;
+      border-top: 1px solid var(--card-border);
+      margin-top: 6px;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--card-border);
+      font-size: 12.5px;
+    }
+
+    .detail-key {
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .detail-val {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .code-val {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #CBD5E1;
+    }
+
+    .rbac-section {
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid var(--card-border);
+    }
+
+    .rbac-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .rbac-desc {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      line-height: 18px;
+      margin-bottom: 14px;
+    }
+
+    .token-box {
+      margin-top: 10px;
+      padding: 12px;
+      background: rgba(10, 11, 16, 0.85);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: #CBD5E1;
+      word-break: break-all;
+      display: none;
+    }
+
+    .copy-btn {
+      margin-top: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--text-secondary);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+    
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.09);
+      color: #FFFFFF;
+    }
+
+    .user-directory-box {
+      margin-top: 14px;
+      background: rgba(52, 211, 153, 0.06);
+      border: 1px solid rgba(52, 211, 153, 0.2);
+      border-radius: var(--radius-element);
+      padding: 14px;
+    }
+
+    .user-list {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .user-row-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(11, 13, 20, 0.7);
+      border: 1px solid var(--card-border);
+      border-radius: 7px;
+      padding: 8px 12px;
+    }
+
+    .forbidden-box {
+      margin-top: 14px;
+      background: var(--danger-bg);
+      border: 1px solid var(--danger-border);
+      border-radius: var(--radius-element);
+      padding: 14px;
+    }
+
+    .forbidden-status {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--danger-text);
+      text-transform: uppercase;
+      margin-bottom: 5px;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Clean Minimalist Header (College badge removed) -->
+  <div class="header-branding">
+    <div class="brand-icon-wrapper">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+    </div>
+    <h1 class="title">User Authentication</h1>
+    <p class="subtitle">Secure JWT session management & role-based authorization</p>
+  </div>
+
+  <!-- AUTH VIEW (LOGIN / REGISTER) -->
+  <div id="authContainer" class="card">
+    
+    <!-- Tab Switcher -->
+    <div class="tab-bar">
+      <button type="button" class="tab-btn active" id="tabSignIn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+          <polyline points="10 17 15 12 10 7"/>
+          <line x1="15" x2="3" y1="12" y2="12"/>
+        </svg>
+        Sign In
+      </button>
+      <button type="button" class="tab-btn" id="tabRegister">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <line x1="19" x2="19" y1="8" y2="14"/>
+          <line x1="22" x2="16" y1="11" y2="11"/>
+        </svg>
+        Create Account
+      </button>
+    </div>
+
+    <!-- SIGN IN FORM -->
+    <div id="loginSection">
+      <div id="loginAlert" class="alert alert-danger hidden">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+        <span id="loginAlertText"></span>
+      </div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="loginEmail">Email Address</label>
+          <div class="input-wrapper">
+            <span class="input-icon-left">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="20" height="16" x="2" y="4" rx="2"/>
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+              </svg>
+            </span>
+            <input type="email" id="loginEmail" placeholder="name@college.edu" required autocomplete="email">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <div class="input-wrapper">
+            <span class="input-icon-left">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </span>
+            <input type="password" id="loginPassword" placeholder="••••••••" required autocomplete="current-password">
+            <button type="button" class="toggle-pwd-btn" id="toggleLoginPwd" title="Toggle password visibility">
+              <svg id="loginEyeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" id="loginSubmitBtn" class="btn">
+          Sign In
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+          </svg>
+        </button>
+      </form>
+
+      <!-- Quick Test Accounts -->
+      <div class="quick-fill-bar">
+        <div class="quick-fill-header">
+          <span class="quick-fill-title">Quick Demo Logins</span>
+        </div>
+        <div class="quick-fill-chips">
+          <button type="button" class="quick-chip" id="demoStudentBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/>
+              <path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>
+            </svg>
+            Student (Alice)
+          </button>
+          <button type="button" class="quick-chip" id="demoAdminBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+            Admin (Bob)
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div id="registerSection" class="hidden">
+      <div id="registerAlert" class="alert alert-danger hidden">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+        <span id="registerAlertText"></span>
+      </div>
+
+      <form id="registerForm">
+        <div class="form-group">
+          <label for="regName">Full Name</label>
+          <div class="input-wrapper">
+            <span class="input-icon-left">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </span>
+            <input type="text" id="regName" placeholder="Full name" required autocomplete="name">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="regEmail">Email Address</label>
+          <div class="input-wrapper">
+            <span class="input-icon-left">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="20" height="16" x="2" y="4" rx="2"/>
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+              </svg>
+            </span>
+            <input type="email" id="regEmail" placeholder="name@college.edu" required autocomplete="email">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="regPassword">Password</label>
+          <div class="input-wrapper">
+            <span class="input-icon-left">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </span>
+            <input type="password" id="regPassword" placeholder="Min. 6 characters" minlength="6" required autocomplete="new-password">
+            <button type="button" class="toggle-pwd-btn" id="toggleRegPwd" title="Toggle password visibility">
+              <svg id="regEyeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+          <p class="helper-text">Securely hashed via bcrypt (10 rounds) before storing.</p>
+        </div>
+
+        <div class="form-group">
+          <label>Account Role</label>
+          <div class="role-selector">
+            <button type="button" class="role-option active" data-role="student" id="roleBtnStudent">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/>
+                <path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>
+              </svg>
+              Student
+            </button>
+            <button type="button" class="role-option" data-role="admin" id="roleBtnAdmin">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+                <path d="m9 12 2 2 4-4"/>
+              </svg>
+              Admin
+            </button>
+          </div>
+          <div id="roleHint" class="role-hint student">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="16" y2="12"/><line x1="12" x2="12.01" y1="8" y2="8"/></svg>
+            <span id="roleHintText">Student: Personal profile & authenticated resources access.</span>
+          </div>
+        </div>
+
+        <button type="submit" id="registerSubmitBtn" class="btn">
+          Create Account
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+          </svg>
+        </button>
+      </form>
+    </div>
+
+  </div>
+
+  <!-- PROFILE / DASHBOARD VIEW -->
+  <div id="profileContainer" class="hidden" style="width: 100%; max-width: 540px;">
+    
+    <div class="top-action-bar">
+      <div>
+        <h3 style="font-size: 16px; font-weight: 700; color: #FFFFFF;">Authenticated Session</h3>
+        <p style="font-size: 11.5px; color: #34D399; font-weight: 500;">✓ Active JWT Bearer Token</p>
+      </div>
+      <button id="logoutBtn" class="btn btn-outline" style="width: auto; padding: 6px 14px; font-size: 12.5px; display: inline-flex; align-items: center; gap: 6px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" x2="9" y1="12" y2="12"/>
+        </svg>
+        Sign Out
+      </button>
+    </div>
+
+    <div class="card profile-card">
+      <div class="user-avatar-row">
+        <div class="avatar" id="profAvatar">A</div>
+        <div style="flex: 1;">
+          <h2 id="profName" style="font-size: 17px; font-weight: 700; color: #FFFFFF;">Alice Student</h2>
+          <p id="profEmail" style="font-size: 12.5px; color: var(--text-secondary);">alice@college.edu</p>
+        </div>
+        <div id="profBadge" class="user-badge student">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+          <span id="profBadgeText">Student</span>
+        </div>
+      </div>
+
+      <div class="detail-table">
+        <div class="detail-row">
+          <span class="detail-key">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            Role
+          </span>
+          <span class="detail-val" id="profRole">student</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-key">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m14 9 3 3-3 3"/></svg>
+            Document ID
+          </span>
+          <span class="detail-val code-val" id="profId">672...</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-key">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+            Registered
+          </span>
+          <span class="detail-val" id="profDate">Nov 9, 2026</span>
+        </div>
+        <div class="detail-row" style="border-bottom: none;">
+          <span class="detail-key">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m21 2-2 2m-6 6 7 7a2 2 0 0 1-2.83 0l-1.59-1.59a2 2 0 0 1 0-2.83l.88-.88"/><circle cx="7.5" cy="15.5" r="5.5"/></svg>
+            Session JWT
+          </span>
+          <span id="toggleTokenLink" style="font-size: 11.5px; color: #94A3B8; text-decoration: underline; cursor: pointer;">Reveal Token</span>
+        </div>
+        <div id="tokenBox" class="token-box">
+          <div id="tokenText"></div>
+          <button type="button" class="copy-btn" id="copyTokenBtn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            <span id="copyBtnText">Copy Token</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- RBAC LIVE DEMONSTRATOR -->
+      <div class="rbac-section">
+        <h3 class="rbac-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Role-Based Access Control (RBAC) Test
+        </h3>
+        <p class="rbac-desc">
+          Makes an authenticated call to <code style="background: rgba(255,255,255,0.06); color: #CBD5E1; padding: 2px 5px; border-radius: 4px; font-family: var(--font-mono);">GET /api/admin/users</code>.
+          Admins receive <strong style="color: #34D399;">200 OK</strong>, while Students receive <strong style="color: #FDA4AF;">403 Forbidden</strong>.
+        </p>
+        
+        <button id="testRbacBtn" class="btn btn-secondary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Test Admin Endpoint (/api/admin/users)
+        </button>
+
+        <div id="rbacResultSuccess" class="user-directory-box hidden">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <strong style="color: #34D399; font-size: 11.5px; text-transform: uppercase;">HTTP 200 OK — Admin Access Granted</strong>
+            <span id="userCountTag" style="font-size: 11.5px; color: var(--text-secondary);"></span>
+          </div>
+          <div id="userListRows" class="user-list"></div>
+        </div>
+
+        <div id="rbacResultDenied" class="forbidden-box hidden">
+          <div class="forbidden-status">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" x2="9" y1="9" y2="15"/><line x1="9" x2="15" y1="9" y2="15"/></svg>
+            HTTP 403 Forbidden — Access Denied
+          </div>
+          <p id="forbiddenErrorMsg" style="font-size: 12.5px; color: var(--danger-text); margin-bottom: 4px; font-weight: 500;"></p>
+          <p style="font-size: 11px; color: var(--text-muted);">✓ Verified: Express roleMiddleware rejected non-admin student token.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // State
+    let authToken = localStorage.getItem('fsd_auth_token') || null;
+    let currentUser = null;
+    let selectedRole = 'student';
+
+    // SVG templates for eye
+    const EYE_SVG = `<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>`;
+    const EYE_OFF_SVG = `<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/>`;
+
+    // Elements
+    const authContainer = document.getElementById('authContainer');
+    const profileContainer = document.getElementById('profileContainer');
+    const loginSection = document.getElementById('loginSection');
+    const registerSection = document.getElementById('registerSection');
+    const tabSignIn = document.getElementById('tabSignIn');
+    const tabRegister = document.getElementById('tabRegister');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const loginAlert = document.getElementById('loginAlert');
+    const loginAlertText = document.getElementById('loginAlertText');
+    const registerAlert = document.getElementById('registerAlert');
+    const registerAlertText = document.getElementById('registerAlertText');
+    const roleBtnStudent = document.getElementById('roleBtnStudent');
+    const roleBtnAdmin = document.getElementById('roleBtnAdmin');
+    const roleHint = document.getElementById('roleHint');
+    const roleHintText = document.getElementById('roleHintText');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const testRbacBtn = document.getElementById('testRbacBtn');
+    const toggleTokenLink = document.getElementById('toggleTokenLink');
+    const tokenBox = document.getElementById('tokenBox');
+    const tokenText = document.getElementById('tokenText');
+    const copyTokenBtn = document.getElementById('copyTokenBtn');
+    const copyBtnText = document.getElementById('copyBtnText');
+
+    // Tab Switcher handlers
+    tabSignIn.addEventListener('click', () => {
+      tabSignIn.classList.add('active');
+      tabRegister.classList.remove('active');
+      loginSection.classList.remove('hidden');
+      registerSection.classList.add('hidden');
+      loginAlert.classList.add('hidden');
+    });
+
+    tabRegister.addEventListener('click', () => {
+      tabRegister.classList.add('active');
+      tabSignIn.classList.remove('active');
+      registerSection.classList.remove('hidden');
+      loginSection.classList.add('hidden');
+      registerAlert.classList.add('hidden');
+    });
+
+    // Password visibility toggles with SVG
+    const toggleLoginPwd = document.getElementById('toggleLoginPwd');
+    const loginPassword = document.getElementById('loginPassword');
+    const loginEyeIcon = document.getElementById('loginEyeIcon');
+    toggleLoginPwd.addEventListener('click', () => {
+      if (loginPassword.type === 'password') {
+        loginPassword.type = 'text';
+        loginEyeIcon.innerHTML = EYE_OFF_SVG;
+      } else {
+        loginPassword.type = 'password';
+        loginEyeIcon.innerHTML = EYE_SVG;
+      }
+    });
+
+    const toggleRegPwd = document.getElementById('toggleRegPwd');
+    const regPassword = document.getElementById('regPassword');
+    const regEyeIcon = document.getElementById('regEyeIcon');
+    toggleRegPwd.addEventListener('click', () => {
+      if (regPassword.type === 'password') {
+        regPassword.type = 'text';
+        regEyeIcon.innerHTML = EYE_OFF_SVG;
+      } else {
+        regPassword.type = 'password';
+        regEyeIcon.innerHTML = EYE_SVG;
+      }
+    });
+
+    // Role selection
+    roleBtnStudent.addEventListener('click', () => {
+      selectedRole = 'student';
+      roleBtnStudent.classList.add('active');
+      roleBtnAdmin.classList.remove('active');
+      roleHint.className = 'role-hint student';
+      roleHintText.textContent = 'Student: Personal profile & authenticated resources access.';
+    });
+
+    roleBtnAdmin.addEventListener('click', () => {
+      selectedRole = 'admin';
+      roleBtnAdmin.classList.add('active');
+      roleBtnStudent.classList.remove('active');
+      roleHint.className = 'role-hint admin';
+      roleHintText.textContent = 'Admin: Full administrative dashboard & system-wide user directory.';
+    });
+
+    // Quick Fill demo accounts
+    document.getElementById('demoStudentBtn').addEventListener('click', () => {
+      document.getElementById('loginEmail').value = 'alice@college.edu';
+      document.getElementById('loginPassword').value = 'Password123!';
+      loginAlert.classList.add('hidden');
+    });
+
+    document.getElementById('demoAdminBtn').addEventListener('click', () => {
+      document.getElementById('loginEmail').value = 'admin@college.edu';
+      document.getElementById('loginPassword').value = 'AdminMasterKey999!';
+      loginAlert.classList.add('hidden');
+    });
+
+    // Handle Login
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      loginAlert.classList.add('hidden');
+      const submitBtn = document.getElementById('loginSubmitBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = 'Signing In...';
+
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || 'Login failed.');
+        }
+
+        handleAuthSuccess(data.token, data.user);
+      } catch (err) {
+        loginAlertText.textContent = err.message;
+        loginAlert.classList.remove('hidden');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `Sign In <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`;
+      }
+    });
+
+    // Handle Registration
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      registerAlert.classList.add('hidden');
+      const submitBtn = document.getElementById('registerSubmitBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = 'Creating Account...';
+
+      const name = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const password = document.getElementById('regPassword').value;
+
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password, role: selectedRole }),
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || 'Registration failed.');
+        }
+
+        handleAuthSuccess(data.token, data.user);
+      } catch (err) {
+        registerAlertText.textContent = err.message;
+        registerAlert.classList.remove('hidden');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `Create Account <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`;
+      }
+    });
+
+    function handleAuthSuccess(token, user) {
+      authToken = token;
+      currentUser = user;
+      localStorage.setItem('fsd_auth_token', token);
+      renderProfile(user);
+    }
+
+    function renderProfile(user) {
+      authContainer.classList.add('hidden');
+      profileContainer.classList.remove('hidden');
+
+      document.getElementById('profAvatar').textContent = user.name ? user.name.charAt(0).toUpperCase() : 'U';
+      document.getElementById('profName').textContent = user.name;
+      document.getElementById('profEmail').textContent = user.email;
+      document.getElementById('profRole').textContent = user.role;
+      document.getElementById('profId').textContent = user._id || 'N/A';
+      document.getElementById('profDate').textContent = user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Today';
+
+      const badge = document.getElementById('profBadge');
+      badge.className = `user-badge ${user.role}`;
+      document.getElementById('profBadgeText').textContent = user.role === 'admin' ? 'Admin' : 'Student';
+
+      tokenText.textContent = authToken;
+
+      document.getElementById('rbacResultSuccess').classList.add('hidden');
+      document.getElementById('rbacResultDenied').classList.add('hidden');
+    }
+
+    // Toggle raw JWT Token visibility
+    toggleTokenLink.addEventListener('click', () => {
+      if (tokenBox.style.display === 'block') {
+        tokenBox.style.display = 'none';
+        toggleTokenLink.textContent = 'Reveal Token';
+      } else {
+        tokenBox.style.display = 'block';
+        toggleTokenLink.textContent = 'Hide Token';
+      }
+    });
+
+    // Copy Token helper
+    copyTokenBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(authToken);
+      copyBtnText.textContent = 'Copied!';
+      setTimeout(() => {
+        copyBtnText.textContent = 'Copy Token';
+      }, 1500);
+    });
+
+    // Test RBAC Route
+    testRbacBtn.addEventListener('click', async () => {
+      testRbacBtn.disabled = true;
+      testRbacBtn.textContent = 'Verifying Authorization...';
+      const successBox = document.getElementById('rbacResultSuccess');
+      const deniedBox = document.getElementById('rbacResultDenied');
+
+      successBox.classList.add('hidden');
+      deniedBox.classList.add('hidden');
+
+      try {
+        const res = await fetch('/api/admin/users', {
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          }
+        });
+        const data = await res.json();
+
+        if (res.status === 200) {
+          successBox.classList.remove('hidden');
+          document.getElementById('userCountTag').textContent = `Total Accounts: ${data.meta.totalUsers}`;
+          
+          const rowsContainer = document.getElementById('userListRows');
+          rowsContainer.innerHTML = '';
+          data.users.forEach(u => {
+            const item = document.createElement('div');
+            item.className = 'user-row-item';
+            item.innerHTML = `
+              <div>
+                <div style="font-weight: 600; font-size: 13px; color: #FFFFFF;">${u.name}</div>
+                <div style="font-size: 11px; color: var(--text-secondary);">${u.email}</div>
+              </div>
+              <span class="user-badge ${u.role}">${u.role}</span>
+            `;
+            rowsContainer.appendChild(item);
+          });
+        } else if (res.status === 403) {
+          deniedBox.classList.remove('hidden');
+          document.getElementById('forbiddenErrorMsg').textContent = data.message || 'Access Forbidden: Admin privileges required.';
+        } else {
+          throw new Error(data.message || 'Error occurred.');
+        }
+      } catch (err) {
+        deniedBox.classList.remove('hidden');
+        document.getElementById('forbiddenErrorMsg').textContent = err.message;
+      } finally {
+        testRbacBtn.disabled = false;
+        testRbacBtn.textContent = 'Test Admin Endpoint (/api/admin/users)';
+      }
+    });
+
+    // Logout
+    logoutBtn.addEventListener('click', () => {
+      authToken = null;
+      currentUser = null;
+      localStorage.removeItem('fsd_auth_token');
+      profileContainer.classList.add('hidden');
+      authContainer.classList.remove('hidden');
+      loginForm.reset();
+      tabSignIn.click();
+    });
+
+    // Auto session check on startup
+    if (authToken) {
+      fetch('/api/auth/profile', {
+        headers: { 'Authorization': `Bearer ${authToken}` }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.user) {
+          renderProfile(data.user);
+        } else {
+          localStorage.removeItem('fsd_auth_token');
+          authToken = null;
+        }
+      })
+      .catch(() => {
+        localStorage.removeItem('fsd_auth_token');
+        authToken = null;
+      });
+    }
+  </script>
+</body>
+</html>

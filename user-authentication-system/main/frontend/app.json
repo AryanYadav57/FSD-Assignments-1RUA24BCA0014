@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "name": "User Authentication System",
+    "slug": "user-authentication-system",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    }
+  }
+}

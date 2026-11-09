@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build & OS
+dist/
+build/
+web-build/
+.DS_Store
+*.log
+
+# AI agent caches
+.agents/
+.gemini/

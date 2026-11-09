@@ -1,0 +1,13 @@
+{
+  "name": "user-authentication-system",
+  "version": "1.0.0",
+  "description": "Full-Stack User Authentication System with React Native Web, Express & MongoDB (5th Sem BCA)",
+  "scripts": {
+    "server": "npm --prefix backend start",
+    "server:dev": "npm --prefix backend run dev",
+    "test": "npm --prefix backend test",
+    "web": "npm --prefix frontend start"
+  },
+  "author": "Aryan (1RUA24BCA0014)",
+  "license": "ISC"
+}
